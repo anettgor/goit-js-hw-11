@@ -18,7 +18,6 @@ if (!searchBtn) {
     onSubmit();
   });
 }
-
 const params = {
   KEY: '33187861-b0f031d63d8289b7509252611',
   IMAGE_TYPE: 'photo',
@@ -26,14 +25,11 @@ const params = {
   SAFE_SEARCH: 'true',
   PER_PAGE: 40,
 };
-
 const { KEY, IMAGE_TYPE, ORIENTATION, SAFE_SEARCH, PER_PAGE } = params;
 
 async function fetchImages() {
   try {
     const URL = `https://pixabay.com/api/?key=${KEY}&q=${input.value}&image_type=${IMAGE_TYPE}&orientation=${ORIENTATION}&safe_search=${SAFE_SEARCH}&per_page=${PER_PAGE}&page=${page}`;
-
-    //  const testUrl = 'https://jsonplaceholder.typicode.com/todos';
     const response = await axios.get(URL);
     console.log('FETCH IMAGES RESPONSE', response);
     return response;
