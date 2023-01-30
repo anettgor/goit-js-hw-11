@@ -25,6 +25,7 @@ const params = {
   SAFE_SEARCH: 'true',
   PER_PAGE: 40,
 };
+
 const { KEY, IMAGE_TYPE, ORIENTATION, SAFE_SEARCH, PER_PAGE } = params;
 
 async function fetchImages() {
@@ -38,7 +39,6 @@ async function fetchImages() {
     Notiflix.Notify.failure('Ooops an error has occurred: ' + error.message);
   }
 }
-
 let page = 1;
 let pagesTotal;
 
@@ -47,7 +47,7 @@ let lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
 });
 
-function scrollByTwo() {
+function scrollLower() {
   const { height: cardHeight } =
     gallery.firstElementChild.getBoundingClientRect();
 
@@ -117,7 +117,7 @@ function fetchMore() {
   page++;
   fetchImages().then(function (onFulfilled) {
     showOutput(onFulfilled);
-    scrollByTwo();
+    scrollLower();
   });
 
   if (page >= pagesTotal) {
