@@ -14,9 +14,11 @@
     <title>Homework 11</title>
   </head>
   <body>
-    <div class="input-bar">
-      <h1>Image finder</h1>
-      <p>Find an image by filling in the form!</p>
+    <div class="input-heading">
+      <h1 class="title">Image finder</h1>
+      <p class="title-p">Find an image by filling in the form!</p>
+    </div>
+    <div class="stick">
       <form class="search-form" id="search-form">
         <input
           type="text"
@@ -24,13 +26,23 @@
           autocomplete="off"
           placeholder="Search images..."
         />
-        <button class="submit" type="submit">Search</button>
+
+        <button class="submit" type="submit">
+          Search
+          <img
+            class="search-icon"
+            src="./images/search.svg"
+            alt="Search icon"
+          />
+        </button>
       </form>
     </div>
+    <!-- </div> -->
     <div class="gallery">
       <!-- Obraz karty -->
     </div>
     <button type="button" class="load-more">Load more</button>
+
     <!-- <script src="../node_modules/axios/dist/axios.min.js"></script> -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/simplelightbox/2.11.0/simple-lightbox.min.js"

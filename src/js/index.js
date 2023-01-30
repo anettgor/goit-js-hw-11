@@ -8,25 +8,7 @@ const gallery = document.querySelector('.gallery');
 const loadMore = document.querySelector('.load-more');
 const input = document.querySelector('input');
 
-// const { height: cardHeight } = document
-//   .querySelector('.gallery')
-//   .firstElementChild.getBoundingClientRect();
-
-// window.scrollBy({
-//   top: cardHeight * 2,
-//   behavior: 'smooth',
-// });
-
-// function hideLoadMoreBtn() {
-//   loadMore.visibility:hidden;
-// }
-
 loadMore.style.display = 'none';
-
-let lightbox = new SimpleLightbox('.gallery a', {
-  captionsData: 'alt',
-  captionDelay: 250,
-});
 
 if (!searchBtn) {
   console.error('No search button found');
@@ -39,51 +21,67 @@ if (!searchBtn) {
 
 const params = {
   KEY: '33187861-b0f031d63d8289b7509252611',
-  IMG_TYPE: 'photo',
+  IMAGE_TYPE: 'photo',
   ORIENTATION: 'horizontal',
   SAFE_SEARCH: 'true',
   PER_PAGE: 40,
 };
 
-const { KEY, IMG_TYPE, ORIENTATION, SAFE_SEARCH, PER_PAGE } = params;
-
-let currentPage = 1;
-let totalPages;
-
-function onSubmit() {
-  fetchImages().then(function (response) {
-    if (input.value.trim() === '') {
-      return Notiflix.Notify.failure('Input field cannot be empty');
-    } else if (response.data.totalHits > 0) {
-      // lightbox.refresh();
-      showOutput(response);
-      console.log('response', response);
-      totalPages = Math.ceil(response.data.totalHits / PER_PAGE);
-      Notiflix.Notify.success(
-        `"Hooray! We found ${response.data.totalHits} images."`
-      );
-      loadMore.style.display = 'block';
-      return response;
-    } else {
-      return Notiflix.Notify.failure(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
-    }
-  });
-}
+const { KEY, IMAGE_TYPE, ORIENTATION, SAFE_SEARCH, PER_PAGE } = params;
 
 async function fetchImages() {
   try {
-    const URL = `https://pixabay.com/api/?key=${KEY}&q=${input.value}&image_type=${IMG_TYPE}&orientation=${ORIENTATION}&safe_search=${SAFE_SEARCH}&per_page=${PER_PAGE}&page=${currentPage}`;
+    const URL = `https://pixabay.com/api/?key=${KEY}&q=${input.value}&image_type=${IMAGE_TYPE}&orientation=${ORIENTATION}&safe_search=${SAFE_SEARCH}&per_page=${PER_PAGE}&page=${page}`;
 
     //  const testUrl = 'https://jsonplaceholder.typicode.com/todos';
     const response = await axios.get(URL);
     console.log('FETCH IMAGES RESPONSE', response);
     return response;
   } catch (error) {
-    console.error(error);
-    Notiflix.Notify.failure('Ooops error has occurred: ' + error.message);
+    console.error('FETCH ERROR', error);
+    Notiflix.Notify.failure('Ooops an error has occurred: ' + error.message);
   }
+}
+
+let page = 1;
+let pagesTotal;
+
+let lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
+
+function scrollByTwo() {
+  const { height: cardHeight } =
+    gallery.firstElementChild.getBoundingClientRect();
+
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
+}
+
+function onSubmit() {
+  gallery.innerHTML = '';
+  page = 1;
+  fetchImages().then(function (onFulfilled) {
+    if (input.value.trim() === '') {
+      return Notiflix.Notify.failure('Input field cannot be empty');
+    } else if (onFulfilled.data.totalHits > 0) {
+      // lightbox.refresh();
+      showOutput(onFulfilled);
+      pagesTotal = Math.ceil(onFulfilled.data.totalHits / PER_PAGE);
+      Notiflix.Notify.success(
+        `"Hooray! We found ${onFulfilled.data.totalHits} images."`
+      );
+      loadMore.style.display = 'block';
+      return onFulfilled;
+    } else {
+      return Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+    }
+  });
 }
 
 function showOutput(response) {
@@ -116,16 +114,20 @@ function showOutput(response) {
       </div>
    `;
   });
+  lightbox.refresh();
 }
 
 function fetchMore() {
-  currentPage++;
-  fetchImages().then(function (response) {
-    showOutput(response);
+  page++;
+  fetchImages().then(function (onFulfilled) {
+    showOutput(onFulfilled);
+    scrollByTwo();
   });
-  if (currentPage >= totalPages) {
+
+  if (page >= pagesTotal) {
     loadMore.style.display = 'none';
-    return Notify.info("You've reached the end of search results.");
+    return Notify.info("That's all of the search results");
   }
 }
+
 loadMore.addEventListener('click', fetchMore);
